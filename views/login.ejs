@@ -1,0 +1,74 @@
+<script src="javascripts/jquery-3.2.1.js"></script>
+<script src="javascripts/underscore-min.js"></script>
+<script src="javascripts/md5.min.js"></script>
+<script type="text/javascript">
+    var sessionId = '';
+    $(function(){
+        heartBeat();
+        $("#submitBtn").click(submitProxy);
+    });
+
+    function submitProxy(){
+        var username = $("#username").val();
+        var verification = $("#verification").val();
+        var pwd = $("#password").val();
+        var encrptPassword = password(pwd);
+        var authCode = md5(sessionId+'-'+encrptPassword).toUpperCase();
+        $.ajax({
+            dataType: 'json',
+            url: 'login',
+            method:'post',
+            data:{
+                username:username,
+                authCode:authCode,
+                verification:verification
+            },
+            success: function(data){
+                console.log(data)
+                // if(data.errorCode==0){
+                //     location.href = "file";
+                // }else{
+                //     sessionId = data.NDSSESSIONID;
+                //     alert("登录失败:"+data.errorMsg);
+                // }
+            }
+        });
+    }
+
+    function heartBeat(){
+        $.ajax({
+            dataType: 'json',
+            url: 'heartbeat',
+            method:'post',
+            success: function(data){
+                if(data.NDSSESSIONID){
+                    sessionId = data.NDSSESSIONID;
+                    $("#verificationimg").attr("src", "/reverification");
+                }
+            }
+        });
+    }
+
+    function password(password){
+        return md5('node-'+password+'-nds').toUpperCase();
+    }
+</script>
+<form>
+    <div>
+        <label>Username:</label>
+        <input type="text" id="username" value="a"/>
+    </div>
+    <div>
+        <label>Password:</label>
+        <input type="password" id="password" value="a"/>
+    </div>
+
+    <div>
+        <label>verification:</label>
+        <input type="text" id="verification" value="a"/>
+        <img id="verificationimg"/>
+    </div>
+    <div>
+        <input type="button" id="submitBtn" value="Log In"/>
+    </div>
+</form>

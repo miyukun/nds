@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel='stylesheet' href='stylesheets/style.css' />
+
+    <style type="text/css">
+        table{
+             border-collapse:collapse;
+        }
+
+        table,td{
+            border:1px solid black;
+            padding:0;
+        }
+    </style>
+    <script src="javascripts/jquery-3.2.1.js"></script>
+    <script src="javascripts/underscore-min.js"></script>
+    <script type="text/javascript">
+         $(function(){
+             refreshUesrs();
+         });
+
+        function addUser(){
+            $.ajax({
+                dataType: 'json',
+                url: 'users/add',
+                method:'post',
+                data:{
+                    username:$("#username").val(),
+                    password:$("#password").val()
+                },
+                beforeSend:function(){
+                    showMsg('正在操作');
+                },
+                success: function(data){
+                    if(data.errorCode==0){
+                        showMsg("添加成功");
+                    }else{
+                        showMsg("添加失败:"+data.message);
+                    }
+                    fillTable(data.users);
+                }
+            });
+        }
+
+        function refreshUesrs(){
+            $.ajax({
+                dataType: "json",
+                url: 'users/list',
+                beforeSend:function(){
+                    showMsg('正在操作');
+                },
+                success: function(data){
+                    if(data.errorCode==0){
+                        showMsg("刷新成功");
+                        fillTable(data.users);
+                    }else{
+                        showMsg("刷新失败:"+data.message);
+                    }
+                }
+            });
+        }
+
+        function fillTable(users){
+            $("#usersTab tbody").empty();
+            _.each(users,function(u){
+                if(u){
+                    var str = '<tr><td>'+u.userid+'</td><td>'+u.username+'</td><td>'+u.password+'</td><td><a href="javascript:void(0);" onclick="delUser(this);">删除</a></td></tr>';
+                    $("#usersTab tbody").append(str);
+                }
+            });
+        }
+
+        function delUser(obj) {
+            var userid = $($(obj).parent().parent().children()[0]).text();
+            $.ajax({
+                dataType: 'json',
+                url: 'users/delete',
+                method:'post',
+                data:{userid:userid},
+                beforeSend:function(){
+                    showMsg('正在操作');
+                },
+                success: function(data){
+                    if(data.errorCode==0){
+                        showMsg("删除成功");
+
+                    }else{
+                        showMsg("删除失败:"+data.message);
+
+                    }
+                    fillTable(data.users);
+                }
+            });
+         }
+
+         function showMsg(msg){
+             $("#result").text(msg);
+         }
+    </script>
+</head>
+<body>
+<%include header.ejs%>
+
+    username:<input type="text" id="username"/>
+    password:<input type="text" id="password"/>
+    <input type="button" value="添加" onclick="addUser()"/>
+    <div id="result"></div>
+
+    <table id="usersTab">
+         <thead>
+            <td>用户id</td>
+            <td>用户名</td>
+            <td>密码</td>
+            <td>操作</td>
+        </thead>
+        <tbody>
+        </tbody>
+        <tfoot>
+        </tfoot>
+    </table>
+</body>
+</html>

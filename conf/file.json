@@ -1,0 +1,43 @@
+{
+  "eeee":{
+    "path": "files/data1/"
+  },
+  "aaaa":{
+    "path": "../files/data2/"
+  },
+  "file3":{
+    "path": "../files/data3/"
+  },
+  "file4":{
+    "path": "../files/data4/"
+  },
+  "file5":{
+    
+  },
+  "ftp1":{
+    "type":"ftp",
+    "path": ".",
+    "host": "192.168.1.66",
+    "port": 21,
+    "user": "xiaoai",
+    "pass": "xiaoai@2"
+  },
+  "sftp":{
+    "type":"sftp",
+    "path": ".",
+    "host": "192.168.1.66",
+    "port": 22,
+    "user": "xiaoai",
+    "pass": "xiaoai@2"
+  },
+   "e2e":{
+    "path": "D:/work/data/"
+  },
+   "liaoning":{
+    "path": "D:/work/data/"
+  },
+ "keshihua":{
+    "path": "D:/work/keshihua/"
+  }
+  
+}

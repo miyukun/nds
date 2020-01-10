@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="javascripts/jquery-3.2.1.js"></script>
+    <script src="javascripts/underscore-min.js"></script>
+    <script src="javascripts/md5.min.js"></script>
+    <script type="text/javascript">
+        $(function() {
+            $("#getGroupList").click(getGroupList);
+            $("#getTestAlertList").click(getTestAlertList);
+            $("#getTestAlertLogList").click(getTestAlertLogList);
+            $("#getTestResultList").click(getTestResultList);
+            $("#getTopologyDetails").click(getTopologyDetails);
+        });
+
+        function getGroupList() {
+            $.ajax({
+                dataType: "json",
+                url: 'nvs/getGroupList',
+                method: 'post',
+                headers: {
+                    'Content-Type': 'application/json; charset=utf-8'
+                },
+                data: JSON.stringify({
+                    name: '146'
+                }),
+                success: function(data) {
+                    console.log(data)
+                }
+            });
+        }
+
+        function getTestAlertList() {
+            $.ajax({
+                dataType: "json",
+                url: 'nvs/getTestAlertList',
+                method: 'post',
+                headers: {
+                    'Content-Type': 'application/json; charset=utf-8'
+                },
+                data: JSON.stringify({
+                    name: '146'
+                }),
+                success: function(data) {
+                    console.log(data)
+                }
+            });
+        }
+
+        function getTestAlertLogList() {
+            $.ajax({
+                dataType: "json",
+                url: 'nvs/getTestAlertLogList',
+                method: 'post',
+                headers: {
+                    'Content-Type': 'application/json; charset=utf-8'
+                },
+                data: JSON.stringify({
+                    name: '146'
+                }),
+                success: function(data) {
+                    console.log(data)
+                }
+            });
+        }
+
+        function getTestResultList() {
+            $.ajax({
+                dataType: "json",
+                url: 'nvs/getTestResultList',
+                method: 'post',
+                headers: {
+                    'Content-Type': 'application/json; charset=utf-8'
+                },
+                data: JSON.stringify({
+                    name: '146',
+                    para: {
+                        testId: 33,
+                        beginTime: 0,
+                        endTime: 1525857393915,
+                        destNodeId: 236, 
+                        sort: 'reportTime',
+                        dir: 'DESC',
+                        start: 0,
+                        limit: 100,
+                    }
+                    // para: {
+                    //     testId: 23,
+                    //      beginTime: 0,
+                    //     endTime: Date.now(),
+                    //     sort: "reportTime",
+                    //     dir: "DESC"
+                    //     // start: 0,
+                    //     // limit: 20000,
+                    //     // sort: "reportTime",
+                    //     // dir: "DESC",
+                    // }
+                }),
+                success: function(data) {
+                    console.log(data)
+                }
+            });
+        }
+
+        function getTopologyDetails() {
+            $.ajax({
+                dataType: "json",
+                url: 'nvs/getTopologyDetails',
+                method: 'post',
+                headers: {
+                    'Content-Type': 'application/json; charset=utf-8'
+                },
+                data: JSON.stringify({
+                    name: '146'
+                }),
+                success: function(data) {
+                    console.log(data)
+                }
+            });
+        }
+
+    </script>
+</head>
+
+<body>
+    <input type="button" id="getGroupList" value="getGroupList" />
+    <input type="button" id="getTestAlertList" value="getTestAlertList" />
+    <input type="button" id="getTestAlertLogList" value="getTestAlertLogList" />
+    <input type="button" id="getTestResultList" value="getTestResultList" />
+    <input type="button" id="getTopologyDetails" value="getTopologyDetails" />
+</body>
+
+</html>

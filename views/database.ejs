@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel='stylesheet' href='stylesheets/style.css' />
+    <style type="text/css">
+        span {
+            margin: 10px;
+        }
+
+        table{
+            border-collapse:collapse;
+        }
+
+        table,td{
+            border:1px solid black;
+            padding:30;
+        }
+    </style>
+    <script src="javascripts/jquery-3.2.1.js"></script>
+    <script src="javascripts/underscore-min.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            getDBList();
+            $("#multiQuery").click(multiQuery);
+        });
+        function getDBList(){
+            $.ajax({
+                dataType: "json",
+                url: 'database/list',
+                method:'post',
+                success: function(data){
+                    if(data.errorCode==0){
+                        _.each(data.rows,function(row){
+                            var opt = $("<option></option>");
+                            opt.text(row);
+                            opt.val(row);
+                            $("#dbselect").append(opt);
+                        });
+                    }else{
+                        alert("刷新失败:"+data.message);
+                    }
+                }
+            });
+        }
+        function sendReq(){
+            var sql = $("#textarea1").val();
+            var db = $("#dbselect").val();
+            var tag = db;
+            var data = [{
+                dbName:db,
+                sql:sql,
+                tag:tag
+            }];
+            $.ajax({
+                dataType: "json",
+                url: 'database/sql',
+                method:'post',
+                headers:{'Content-Type':'application/json; charset=utf-8'},
+                data:JSON.stringify(data),
+                beforeSend:function(){
+                    $("#sqlTab thead").empty();
+                    $("#sqlTab tbody").empty();
+                },
+                success: function(data){
+                    _.each(data[tag].fields,function(field){
+                        var td = $("<td></td>");
+                        td.text(field);
+                        $("#sqlTab thead").append(td);
+                    });
+
+                    _.each(data[tag].rows,function(row){
+                        var tr = $("<tr></tr>");
+                        _.each(data[tag].fields,function(field){
+                            var td = $("<td></td>");
+                            td.text(row[field]);
+                            tr.append(td);
+                        });
+                        $("#sqlTab tbody").append(tr);
+                    });
+                }
+            });
+        }
+
+        function showTabs(){
+
+            var db = $("#dbselect").val();
+            var tag = db;
+            var data = [{
+                dbName:db,
+                tag:tag
+            }];
+            $.ajax({
+                dataType: "json",
+                url: 'database/listTables',
+                method:'post',
+                headers:{'Content-Type':'application/json; charset=utf-8'},
+                data:JSON.stringify(data),
+                beforeSend:function(){
+                    $("#sqlTab thead").empty();
+                    $("#sqlTab tbody").empty();
+                },
+                success: function(data){
+                     console.log(data);
+                }
+            });
+        }
+        function multiQuery(){
+            var data = [{
+                dbName:'local',
+                sql:'select * from Users;',
+                tag:'tag1'
+            },{
+                dbName:'local',
+                sql:'select * from GeographMap;',
+                tag:'tag2'
+            },{
+                dbName:'local',
+                sql:'select * from Groups;',
+                tag:'tag3'
+            }];
+            $.ajax({
+                dataType: "json",
+                url: 'database/sql',
+                method:'post',
+                headers:{'Content-Type':'application/json; charset=utf-8'},
+                data:JSON.stringify(data),
+                success: function(data){
+                    console.log(data)
+                }
+            });
+        }
+    </script>
+</head>
+<body>
+<%include header.ejs%>
+
+<input type="button" id="multiQuery" value="multiQuery"/>
+    <div>
+    <select id="dbselect">
+
+    </select>
+    </div>
+    <textarea rows="10" cols="40" id="textarea1"></textarea></br>
+    <input type="button" value="sendReq" onclick="sendReq()"/>
+    <input type="button" value="showTabs" onclick="showTabs()"/>
+    <table id="sqlTab">
+        <thead></thead>
+        <tbody></tbody>
+    </table>
+</body>
+</html>

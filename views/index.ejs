@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <script src="javascripts/jquery-3.2.1.js"></script>
+    <script src="javascripts/underscore-min.js"></script>
+    <script src="javascripts/md5.min.js"></script>
+
+    <script type="text/javascript">
+      var sessionId = '';
+      $(function(){
+        $("#subbtn").click(updatePwd);
+      });
+      function showPwdDiv(){
+        $.ajax({
+          dataType: 'json',
+          url: '/users/getCurrentUser',
+          method:'post',
+          success: function(data){
+            if(data.errorCode==0){
+              sessionId = data['NDSSESSIONID'];
+              $("#pwdDiv").toggle();
+              $("#user_name").text(data.user);
+            }
+          }
+        });
+      }
+
+      function updatePwd(){
+        $.ajax({
+          dataType: 'json',
+          url: '/users/updatePwd',
+          method:'post',
+          data:{
+            authCode : md5(sessionId+'-'+password($("#oldpwd").val())).toUpperCase(),
+            newpwd:password($("#newpwd").val())
+          },
+          success: function(data){
+            if(data.errorCode==0){
+              $("#pwdDiv").toggle();
+              $("#user_name").text('');
+            }
+            alert(data.errorMsg);
+          }
+        });
+      }
+
+      function password(password){
+        return md5('node-'+password+'-nds').toUpperCase();
+      }
+    </script>
+  </head>
+  <body>
+    <h1><%= title %></h1>
+    <div id="result"></div>
+
+    <div id="pwdDiv" style="display: none">
+      <div>用户名:<span id="user_name"/> </div>
+      <div>旧密码:<input type="password" id="oldpwd"/> </div>
+      <div>新密码:<input type="password" id="newpwd"/> </div>
+      <div><input type="button" id="subbtn" value="更改"/> </div>
+    </div>
+    <a href='javascript:void(0);'  onclick='showPwdDiv();'>修改密码</a>
+    <a href='/file'>读取文件</a>
+    <a href='/database'>读取数据库</a>
+    <a href='/users'>用户列表</a>
+    <a href='/logout'>退出</a>
+
+  </body>
+</html>

@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel='stylesheet' href='stylesheets/style.css' />
+    <style type="text/css">
+        span {
+            margin: 10px;
+        }
+
+        table{
+            border-collapse:collapse;
+        }
+
+        table,td{
+            border:1px solid black;
+            padding:0;
+        }
+    </style>
+    <script src="javascripts/jquery-3.2.1.js"></script>
+    <script src="javascripts/underscore-min.js"></script>
+    <script src="javascripts/md5.min.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            getFileList();
+            $("#multiQuery").click(multiQuery);
+        });
+        function getFileList(){
+            var tag1 = flag;
+            var data = [
+                {
+                    path:flag,
+                    tag:flag
+                }
+            ];
+            $.ajax({
+                dataType: "json",
+                url: 'file/list',
+                method:'post',
+                headers:{'Content-Type':'application/json; charset=utf-8'},
+                data:JSON.stringify(data),
+                success: function(data){
+                    if(data.errorCode==0){
+                         showFiles(data[tag1]);
+                    }else{
+                        alert("刷新失败:"+data.errorMsg);
+                    }
+                }
+            });
+        }
+
+        function showFiles(files){
+             $("#filesDiv").empty();
+            _.each(files,function(f){
+                if(f){
+                    var str = '<span><a href="javascript:void(0);" onclick="getFileContent(this);" >'+f+'</a></span>';
+                    $("#filesDiv").append(str);
+                }
+            });
+        }
+
+        function showMsg(msg){
+            $("#result").text(msg);
+        }
+
+        function getFileContents(){
+            var checkboxs = $("input[name='checkbox1']:checked");
+            _.each(checkboxs,function(c){
+                console.log($(c).val())
+            })
+        }
+
+        var flag = 'ffff';
+
+        function getFileContent(obj){
+            var path = flag;
+            var fieldList = ['视频','流量','下载','即时通讯','其他'];
+            var tag = path;
+            var data = [
+                {
+                    path:path,
+                    isJson:true,
+                    filename:$(obj).text(),
+                    columnSp:';',
+                    lineSp:'\r\n',
+                    fieldList:fieldList,
+                    headerLine:false,
+                    tag:tag
+                }
+            ];
+            $.ajax({
+                dataType: "json",
+                url: 'file/csv',
+                method:'post',
+                traditional:true,
+                headers:{'Content-Type':'application/json; charset=utf-8'},
+                data:JSON.stringify(data) ,
+                beforeSend:function(){
+                    showTabTitle(fieldList,tag);
+                },
+                success: function(data){
+                    console.log(data)
+                    if(data.errorCode==0){
+                        showMsg("刷新成功");
+//                        fillTable(fieldList,data,tag);
+                    }else{
+                        showMsg("刷新失败:"+data.message);
+                    }
+                }
+            });
+//            var data = [{
+//                url:'data1.csv',
+//                columnSp:';',
+//                lineSp:'\r\n',
+//                fieldList:['视频','流量','下载','即时通讯','其他'],
+//                headerLine:true,
+//                tag:'tag1'
+//            },{
+//                url:'data1.csv',
+//                columnSp:';',
+//                lineSp:'\r\n',
+//                fieldList:['视频','流量','下载','即时通讯','其他'],
+//                headerLine:true,
+//                tag:'tag2'
+//            },{
+//                url:'data1.csv',
+//                columnSp:';',
+//                lineSp:'\r\n',
+//                fieldList:['视频','流量','下载','即时通讯','其他'],
+//                headerLine:true,
+//                tag:'tag3'
+//            }];
+        }
+
+        function multiQuery(){
+            var data = [{
+                path:"eeee",
+                filename:"data1.csv",
+                columnSp:';',
+                lineSp:'\r\n',
+                fieldList:['视频','流量','下载','即时通讯','其他'],
+                headerLine:true,
+                tag:'tag1'
+            },{
+                path:"aaaa",
+                filename:"data2.csv",
+                columnSp:';',
+                lineSp:'\r\n',
+                fieldList:['视频','流量','下载','即时通讯','其他'],
+                headerLine:true,
+                tag:'tag2'
+            },{
+                path:"file3",
+                filename:"data3.csv",
+                columnSp:';',
+                lineSp:'\r\n',
+                fieldList:['视频','流量','下载','即时通讯','其他'],
+                headerLine:true,
+                tag:'tag3'
+            }];
+            $.ajax({
+                dataType: "json",
+                url: 'file/csv',
+                method:'post',
+                traditional:true,
+                headers:{'Content-Type':'application/json; charset=utf-8'},
+                data:JSON.stringify(data) ,
+                success: function(data){
+                    if(data.errorCode==0){
+                        console.log(data);
+                    }else{
+                        showMsg("刷新失败:"+data.message);
+                    }
+                }
+            });
+        }
+
+        function showTabTitle(titles,tag){
+            $("#contentDiv").empty();
+            var table=$("<table></table>");
+            table.attr('id',tag);
+            $("#contentDiv").append(table);
+            var caption=$("<caption></caption>");
+            caption.text(tag);
+            table.append(caption);
+            var thead=$("<thead></thead>");
+            _.each(titles,function(title){
+                thead.append("<td>"+title+"</td>");
+            });
+            table.append(thead);
+        }
+
+        function fillTable(titles,rows,tag) {
+            var data = rows[tag];
+            _.each(data,function(row){
+
+                if(row){
+                    var str = '<tr>';
+                    _.each(titles,function(title){
+                        str+='<td>'+row[title]+'</td>';
+                    });
+                    str+='</tr>';
+                    $("#"+tag).append(str);
+                }
+            });
+        }
+
+
+    </script>
+</head>
+<body>
+<%include header.ejs%>
+
+<input type="button" id="multiQuery" value="multiQuery"/>
+
+     <div id="filesDiv">
+
+    </div>
+     <div id="contentDiv">
+
+    </div>
+</body>
+</html>

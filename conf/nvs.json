@@ -1,0 +1,21 @@
+{
+	"hb-lo":{
+		"host": "10.215.190.250",
+		"port": 3016,
+		"username":	"lijiaxing",
+		"password": "ljx"
+	},
+	"hb-pub":{
+		"host": "111.63.112.102",
+		"port": 3016,
+		"webport": 3012,
+		"username":	"lijiaxing",
+		"password": "ljx"
+	},
+	"local":{
+		"host": "127.0.0.1",
+		"port": 3016,
+		"username": "admin",
+		"password": "a"
+	}
+}
